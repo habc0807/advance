@@ -300,7 +300,7 @@
             draw: draw
         }
 
-        function Monster(obj) {
+        function Monster() {
             this.img = allSpriteImg
             this.context = context 
             this.imgPos = obj.pos
@@ -308,9 +308,21 @@
         }
 
         Monster.prototype.draw = draw 
-        // const monster = Object.create(Monster.prototype)
-        // function () {}
-        // monster.prototype = new Monster()
+        const RedMonster = Object.create(Monster.prototype)
+        monster.prototype = new Monster()
+        RedMonster.imgPos = {
+            x: 597,
+            y: 399,
+            width: 19,
+            height: 55
+        }
+
+        RedMonster.rect= {
+            x: 150,
+            y: 150,
+            width: 19,
+            height: 55
+        }
 
         // 想修改红色怪兽的大小
         const RedMonster = new Monster({
