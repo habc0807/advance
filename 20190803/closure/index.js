@@ -300,21 +300,11 @@
             draw: draw
         }
 
-        function Monster(rectObj = {x: 100, y: 100}) {
+        function Monster(obj) {
             this.img = allSpriteImg
             this.context = context 
-            this.imgPos = {
-                x: 858,
-                y: 529,
-                width: 32,
-                height: 32
-            }
-            this.rect = {
-                x: rectObj.x,
-                y: rectObj.y,
-                width: 40,
-                height: 40
-            }
+            this.imgPos = obj.pos
+            this.rect = obj.rect
         }
 
         Monster.prototype.draw = draw 
@@ -322,18 +312,39 @@
         // function () {}
         // monster.prototype = new Monster()
 
-        const HotMonster = new Monster({
-            x: 100,
-            y: 100
+        // 想修改红色怪兽的大小
+        const RedMonster = new Monster({
+            pos: {
+                x: 597,
+                y: 399,
+                width: 19,
+                height: 55
+            },
+            rect: {
+                x: 150,
+                y: 150,
+                width: 19,
+                height: 55
+            }
         })
 
         const BlackMonster = new Monster({
-            x: 150,
-            y: 150
+            pos: {
+                x: 858,
+                y: 529,
+                width: 32,
+                height: 32
+            },
+            rect: {
+                x: 100,
+                y: 100,
+                width: 40,
+                height: 40
+            }
         })
 
         hero.draw()
-        HotMonster.draw()
+        RedMonster.draw()
         BlackMonster.draw()
     }
 
