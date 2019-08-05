@@ -300,28 +300,41 @@
             draw: draw
         }
 
-        var monster = {
-            img: allSpriteImg,
-            context: context,
-            imgPos: {
+        function Monster(rectObj = {x: 100, y: 100}) {
+            this.img = allSpriteImg
+            this.context = context 
+            this.imgPos = {
                 x: 858,
                 y: 529,
                 width: 32,
                 height: 32
-            },
-            rect: {
-                x: 100,
-                y: 100,
+            }
+            this.rect = {
+                x: rectObj.x,
+                y: rectObj.y,
                 width: 40,
                 height: 40
-            },
-            draw: draw
+            }
         }
 
+        Monster.prototype.draw = draw 
+        // const monster = Object.create(Monster.prototype)
+        // function () {}
+        // monster.prototype = new Monster()
 
+        const HotMonster = new Monster({
+            x: 100,
+            y: 100
+        })
+
+        const BlackMonster = new Monster({
+            x: 150,
+            y: 150
+        })
 
         hero.draw()
-        monster.draw()
+        HotMonster.draw()
+        BlackMonster.draw()
     }
 
     var resourceManager = prepare()
