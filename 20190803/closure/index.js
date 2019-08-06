@@ -229,6 +229,7 @@
 /**
  * 第四版
  * 用原型链继承的方法 添加两种怪兽
+ * 第四版第二弹 使用组合继承的方式处理 
  */
 
 (function () {
@@ -268,7 +269,6 @@
     function drawImageHandle(context, heroImg, allSpriteImg) {
         // draw 需要定义在hexo 和 monster之前 否则通过hexo.draw()的方式访问不到
         var draw = function () {
-            console.log(this.context)
             this.context.drawImage(
                 this.img,
                 this.imgPos.x,
@@ -300,7 +300,7 @@
             draw: draw
         }
 
-        function Monster() {
+        function Monster(obj) {
             this.img = allSpriteImg
             this.context = context 
             this.imgPos = obj.pos
@@ -308,21 +308,6 @@
         }
 
         Monster.prototype.draw = draw 
-        const RedMonster = Object.create(Monster.prototype)
-        monster.prototype = new Monster()
-        RedMonster.imgPos = {
-            x: 597,
-            y: 399,
-            width: 19,
-            height: 55
-        }
-
-        RedMonster.rect= {
-            x: 150,
-            y: 150,
-            width: 19,
-            height: 55
-        }
 
         // 想修改红色怪兽的大小
         const RedMonster = new Monster({
@@ -358,6 +343,8 @@
         hero.draw()
         RedMonster.draw()
         BlackMonster.draw()
+
+        
     }
 
     var resourceManager = prepare()
@@ -365,4 +352,33 @@
         //  console.log(allSpriteImg)
         drawImageHandle(context, heroImg, allSpriteImg)
     })
+
+    document.onkeyDown = function (e) {
+        console.log(e)
+        console.log(e)
+        console.log(e)
+        var e = e || event
+        const currKeyCode = e.keyCode || e.which || e.charCode
+
+        // left
+        if (currKeyCode == 37) {
+            // todo 重绘
+            console.log('left')
+        }
+
+        // up
+        if (currKeyCode == 38) {
+
+        }
+
+        // right
+        if (currKeyCode == 39) {
+
+        }
+
+        // down
+        if (currKeyCode == 40) {
+
+        }
+    }
 })()
