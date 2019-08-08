@@ -1,10 +1,8 @@
 /**
- * 第五版
- * 用工厂模式添加两个怪兽
+ * 第六版
+ * 用组合模式添加两个怪兽
  * 
- * 定义一个怪兽工厂函数，多次调用该Monster，调用的时候可以进行传参
- * 工厂函数的特性是返回一个对象
- * 每次调用都会返回一个新对象
+ * 
  */
 
 (function () {
@@ -57,39 +55,41 @@
             )
         }
 
-        var hero = {
-            img: heroImg,
-            context: context,
-            imgPos: {
+        function Hero () {
+            this.img = heroImg
+            this.context = context
+            this.imgPos = {
                 x: 0,
                 y: 0,
                 width: 32,
                 height: 32
             },
-            rect: {
+            this.rect = {
                 x: 0,
                 y: 0,
                 width: 40,
                 height: 40
-            },
-            draw: draw
-        }
-
-        function Monster(obj) {
-            return  {
-                img: allSpriteImg,
-                context: context,
-                imgPos: obj.pos,
-                rect: obj.rect,
-                draw: draw
             }
         }
 
+        Hero.prototype.draw = draw 
+
+        function Monster(obj) {
+            this.img = allSpriteImg
+            this.context = context
+            this.imgPos = obj.pos
+            this.rect = obj.rect
+        }
+
+        Monster.prototype.draw = draw
+
+        const hero = new Hero()
+
         // 想修改红色怪兽的大小
-        const RedMonster = Monster({
+        const RedMonster = new Monster({
             pos: {
                 x: 858,
-                y: 529,
+                y: 497,
                 width: 32,
                 height: 32
             },
@@ -101,7 +101,7 @@
             }
         })
 
-        const BlackMonster = Monster({
+        const BlackMonster = new Monster({
             pos: {
                 x: 858,
                 y: 529,
