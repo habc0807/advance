@@ -1,8 +1,8 @@
 /**
  * 第六版
- * 用组合模式添加两个怪兽
- * 
- * 
+ * 用组合模式添加两种怪兽
+ * 继承 红黑 魔王
+ * 重构魔王
  */
 
 (function () {
@@ -55,6 +55,12 @@
             )
         }
 
+        // function Body() {
+        //     this._volumes = {
+        //         _bloodVolume =
+        //     }
+        // }
+
         function Hero () {
             this.img = heroImg
             this.context = context
@@ -71,8 +77,10 @@
                 height: 40
             }
         }
-
         Hero.prototype.draw = draw 
+        const hero = new Hero()
+
+
 
         function Monster(obj) {
             this.img = allSpriteImg
@@ -80,10 +88,9 @@
             this.imgPos = obj.pos
             this.rect = obj.rect
         }
-
         Monster.prototype.draw = draw
 
-        const hero = new Hero()
+        
 
         // 想修改红色怪兽的大小
         const RedMonster = new Monster({
