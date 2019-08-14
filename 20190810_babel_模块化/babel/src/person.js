@@ -1,16 +1,18 @@
-let _symbol = Symbol() // 用symbol 做key  做私有变量 外部拿不到这个引用
 
-class Person {
-    constructor() {
-        this[_symbol] = 'heihei'
+
+// 利用工场函数的特性 每次调用都返回一个新对象 新对象会从新分配新的内存空间 对象里的值互不影响
+function Person () {
+    var _name = ''
+    var PersonProto = {
+        sayMyName() {
+            console.log(_name)
+        },
+        changeMyName(name) {
+            _name = name 
+        }
     }
-    sayMyName() {
-        console.log(this[_symbol])
-    }
-    
-    changeMyName(name) {
-        this[_symbol] = name 
-    }
+
+    return PersonProto
 }
 
 module.exports = Person
