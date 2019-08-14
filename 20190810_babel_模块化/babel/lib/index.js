@@ -1,8 +1,11 @@
 "use strict";
 
-var _a = _interopRequireDefault(require("./a"));
+var Person = require('./person');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var other = require('./other');
 
-console.log(_a["default"]);
-console.log((0, _a["default"])()); // console.log(JSON.stringify(obj()))
+console.log(other.sayMyName());
+var person = new Person();
+person.changeMyName('heihei');
+console.log(person.sayMyName());
+console.log(other.sayMyName());
