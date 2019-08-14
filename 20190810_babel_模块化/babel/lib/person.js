@@ -1,36 +1,17 @@
 "use strict";
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var _symbol = Symbol(); // 用symbol 做私有变量
-
-
-var Person =
-/*#__PURE__*/
-function () {
-  function Person() {
-    _classCallCheck(this, Person);
-
-    this[_symbol] = 'heihei';
-  }
-
-  _createClass(Person, [{
-    key: "sayMyName",
-    value: function sayMyName() {
-      console.log(this[_symbol]);
+// 利用工场函数的特性 每次调用都返回一个新对象 新对象会从新分配新的内存空间 对象里的值互不影响
+function Person() {
+  var _name = '';
+  var PersonProto = {
+    sayMyName: function sayMyName() {
+      console.log(_name);
+    },
+    changeMyName: function changeMyName(name) {
+      _name = name;
     }
-  }, {
-    key: "changeMyName",
-    value: function changeMyName(name) {
-      this[_symbol] = name;
-    }
-  }]);
-
-  return Person;
-}();
+  };
+  return PersonProto;
+}
 
 module.exports = Person;
