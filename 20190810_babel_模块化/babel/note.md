@@ -2,6 +2,7 @@
 
 ./node_modules/.bin/babel src --out-dir lib 
 
+
 ### commonJS 私有变量 通过引用的方式 互改了 
 处理方案 套一层 定义一个私有变量
 
