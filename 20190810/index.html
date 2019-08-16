@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>promise</title>
+</head>
+
+<body>
+    <script type="text/javascript" src="./promise.js"></script>
+
+    <script type="text/javascript">
+        console.log('Promise: ' + Promise);
+        var promiseOld = (new Promise(
+            (resolve, reject) => {
+                setTimeout(() => {
+                    resolve(111)
+                }, 1000);
+            }
+        )).then(function(res) {
+            console.log('111', res)
+            return new Promise((resolve, reject) => {
+                resolve(444)
+            }).then(res => {
+                return 555
+            })
+        })
+
+        promiseOld.then(function (res) {
+            console.log('res2: ', res)
+        })
+    </script>
+</body>
+
+</html>
