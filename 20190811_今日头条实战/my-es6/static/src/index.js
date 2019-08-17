@@ -4,6 +4,7 @@
  */
 
 import { request } from './utils'
+import components from './items'
 
 class Manager {
     // constructor 接收实例化的传参 
@@ -12,13 +13,49 @@ class Manager {
     }
 
     init() {
+        this.detectLoadData();
+        this.appendData();
+        // this.$container.innerHTML = 'yanxin' 
+    }
+
+    appendData() {
         request({
             url: 'http://localhost:8099/list'
         }).then(res => {
-            const { data}  = res 
-            console.log(data)
+            const {
+                data
+            } = res
+            const {
+                data: items
+            } = data
+
+            items.forEach(item => {
+                // console.log(item)
+                const componentName = item.type
+                    .replace(/^\w/g, w => w.toUpperCase())
+                // 反射
+                const Component = components[componentName]
+                const currentComponent = new Component(item)
+                const componentElement = currentComponent.constructorElement()
+                console.log(componentElement)
+                this.$container.appendChild(componentElement)
+            })
         })
-        this.$container.innerHTML = 'yanxin' 
+    }
+
+    detectLoadData() {
+        window.onscroll = () => {
+            const offsetHeight = document.documentElement.offsetHeight
+            const screenHeight = window.screen.height;
+            const scrollY = window.scrollY 
+
+            const gap = offsetHeight - screenHeight - scrollY
+            console.log(gap)
+            if (gap < 50) {
+                // 我们就让他再加载一屏数据
+                this.appendData();
+            }
+        }
     }
 
     // 这个静态方法可以做单例 

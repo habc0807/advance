@@ -12,3 +12,9 @@ advance/20190811_今日头条实战/server              node index.js
 普通路径的页面就可以请求带有端口号的接口了 
 
 1:12分钟
+
+treeSharking 性能优化 webpack神器啊
+
+经常性的看编译产出 能看出很多东西
+
+这个demo特别好 学到了很多东西 继续加油💪
