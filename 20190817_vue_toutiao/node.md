@@ -31,3 +31,6 @@ view>presenter  presenter>model model>presenter presenter>view
 
 mvvm 
 少部分可以理解为 
+
+
+vue-loader原理？
