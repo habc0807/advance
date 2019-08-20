@@ -64,7 +64,7 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
         host: '0.0.0.0',
-        port: 9000,
+        port: 9001,
         disableHostCheck: true,
         before: function (app, server) {
             app.get('/list', function (req, res) {
