@@ -41,6 +41,8 @@ vue-loader原理？
 在当前文件下：` ./node_modules/.bin/webpack-dev-server` 启动一个web服务 
 使用的是webpack-dev-server 
 如果不能启动这个端口：可以查看该端口号是否被占用
+3. 接口数据在 20190811_今日头条实战/server
+advance/20190811_今日头条实战/server              node index.js 
 
 > 注意这里 需要先启动webpack，再启动server。这样的顺序
 
@@ -58,3 +60,8 @@ git blame file_name
 定义元素属性 v-bind:title="num" 指令不用加{{}}
 
 1:07 
+
+在mounted里发请求太完了 也可以在mounted里发，一遍在created里发请求 一会把项目里的请求放到created生命周期里
+
+### data为什么是一个function 
+为什么这里data是一个方法，而不是一个对象，是因为一个组件被用好几次，其它组件跟你用的是同一个组件的数据data,之间会有影响。对象引用类型 

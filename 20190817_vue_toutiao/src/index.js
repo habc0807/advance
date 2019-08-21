@@ -12,6 +12,3 @@ const vm = new Vue({
     el: '#app',
     render: h => h(Main)
 })
- 
- console.log('---------')
- console.log('vue')
