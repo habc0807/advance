@@ -1,34 +1,29 @@
 <template>
     <div>
         <div v-for="(item, key) in list" :key="key">
-            <!-- 单图 -->
-            <div v-if="item.type == 'singlePic'" class="item single-pic">
-                <div class="content">
-                    <span>
-                        {{ item.data.title }}
-                    </span>
-                </div>
-                <img v-bind:src="item.data.imageList[0]" alt="">
-            </div>
-
-            <!-- 组件 -->
-            <div v-else-if="item.type == 'multiplePic'" class="item multiple-image">
-                <h3>{{ item.data.title }}</h3>
-                <div class="image-list">
-                    <img v-for="(image, index) in item.data.imageList" :key="index" v-bind:src="image" alt="">
-                </div>
-            </div>
+            <SinglePic v-if="item.type == 'singlePic'" v-bind="item.data"></SinglePic>
+            <Agriculture v-else-if="item.type === 'agriculture'" v-bind="item.data"></Agriculture>
+            <MultiplePic v-else v-bind="item.data"></MultiplePic>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
+import MultiplePic from '../items/multiple-pic.vue'
+import SinglePic from '../items/single-pic.vue'
+import Agriculture from '../items/agriculture.vue'
+
 export default {
     data() {
         return {
             list: [],
         }
+    },
+    components: {
+        MultiplePic,
+        SinglePic,
+        Agriculture
     },
 
     created() {
