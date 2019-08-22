@@ -14,10 +14,28 @@ import MultiplePic from '../items/multiple-pic.vue'
 import SinglePic from '../items/single-pic.vue'
 import Agriculture from '../items/agriculture.vue'
 
+
+// throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
+const creactThrottle = (delay = 1000) => {
+    let status = 'START'
+    return function throttle(fn, delay = 1000) {
+        if(status === 'WAITING') {
+            return 
+        }
+        
+        status = 'WAITING'
+        setTimeout(() => {
+            status = 'START'
+            fn & fn() 
+        }, delay);
+    }
+}
+
 export default {
     data() {
         return {
             list: [],
+            throttle: creactThrottle()
         }
     },
     components: {
@@ -27,15 +45,34 @@ export default {
     },
 
     created() {
-        axios('http://localhost:8099/list') 
-            .then(({data}) => {
-                const {data: listData} = data
-                this.list = listData
-                console.log(listData)
-            })
+        this.getDataHandle()
+        window.onscroll = () => {
+            const offsetHeight = document.documentElement.offsetHeight
+            const screenHeight = window.screen.height;
+            const scrollY = window.scrollY 
+
+            const gap = offsetHeight - screenHeight - scrollY
+            console.log(gap)
+            if (gap < 50) {
+                // 我们就让他再加载一屏数据
+                const throttle = this.throttle
+                let _this = this
+                throttle(()=> {
+                    _this.appendData();
+                }, 3e3) // 科学技术法 1e3 = 1000 3e3 = 3000
+            }
+        }
     },
 
     methods: {
+        getDataHandle(){
+            axios('http://localhost:8099/list') 
+                .then(({data}) => {
+                    const {data: listData} = data
+                    this.list = listData
+                    console.log(listData)
+                })
+        },
         changeName() {
             this.nums = 5
         } 
