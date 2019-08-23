@@ -89,5 +89,8 @@ module.exports = {
                 }));
             });
         }
-    }
+    },
+    // alias: {
+    //     vue: './node_modules/vue/dist'
+    // }
 };

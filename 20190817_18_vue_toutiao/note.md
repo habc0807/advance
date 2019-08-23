@@ -131,3 +131,23 @@ css隔离
  scroped 通过有属性选择器进行隔离 样式 防止进行样式的全局污染 
 
  26：14
+
+ 笑容渐渐凝固 
+
+ 其实vue有很多版：
+ vue.js
+ vue.min.js
+ vue.runtime.common.dev.js
+ vue.runtime.common.js
+ vue.runtime.common.prod.js
+ vue.runtime.esm.js
+ vue.runtime.js
+ vue.runtime.min.js 
+
+
+### export & default 
+```
+ import MultiPic from './multi-pic'
+ export {MultiPic}
+```
+
