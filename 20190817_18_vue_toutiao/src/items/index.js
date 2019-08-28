@@ -3,4 +3,6 @@
  * @author yuanxin
  */
 
-export { default as MultiPic } from './multiple-pic.vue'
+export { default as MultiplePic } from './multiple-pic.vue'
+export { default as SinglePic } from './single-pic.vue'
+export { default as Agriculture } from './agriculture.vue'

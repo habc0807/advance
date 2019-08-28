@@ -10,9 +10,7 @@
 
 <script>
 import axios from 'axios'
-import MultiplePic from '../items/multiple-pic.vue'
-import SinglePic from '../items/single-pic.vue'
-import Agriculture from '../items/agriculture.vue'
+import * as components from '../items'
 
 
 // throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
@@ -31,6 +29,15 @@ const creactThrottle = (delay = 1000) => {
     }
 }
 
+const convertModule2Obj = moduleObj => {
+    let result = {}
+    for (let moduleName in moduleObj) {
+        result[moduleName] = moduleObj[moduleName]
+    }
+    return result 
+}
+
+
 export default {
     data() {
         return {
@@ -38,12 +45,7 @@ export default {
             throttle: creactThrottle()
         }
     },
-    components: {
-        MultiplePic,
-        SinglePic,
-        Agriculture
-    },
-
+    components:convertModule2Obj(components),
     created() {
         this.getDataHandle()
         window.onscroll = () => {
