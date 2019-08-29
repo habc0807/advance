@@ -14,26 +14,13 @@
     </div>
 </template>
 <script>
-
-
-// debounce 去抖 
-const createDebounce = (fn, delay = 1000) => {
-    let timer = null 
-    return function debounce() {
-        clearTimeout(timmer) // 打断 关键点
-        timer = setTimeout(() => {
-            fn&&fn()
-        }, delay);
-    } 
-}
-
 export default {
     props: ['title', 'imageList'],
     data() {
         return {
             area: '北京',
             price: 0,
-            debounce: createDebounce()
+            debounce: this.createDebounce()
         }
     },
     created(){

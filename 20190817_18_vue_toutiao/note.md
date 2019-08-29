@@ -151,3 +151,10 @@ css隔离
  export {MultiPic}
 ```
 
+### v-bind="item.data"
+可以解构item.data 给组件 
+
+### component 动态组件 
+渲染一个"元组件"为动态组件。依 is 的值，来决定哪个组件被渲染
+`<component :is="item.type | formatComponentName" v-bind="item.data"></component>`
+

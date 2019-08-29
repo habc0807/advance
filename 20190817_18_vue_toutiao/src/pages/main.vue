@@ -1,9 +1,7 @@
 <template>
     <div>
         <div v-for="(item, key) in list" :key="key">
-            <SinglePic v-if="item.type == 'singlePic'" v-bind="item.data"></SinglePic>
-            <Agriculture v-else-if="item.type === 'agriculture'" v-bind="item.data"></Agriculture>
-            <MultiplePic v-else v-bind="item.data"></MultiplePic>
+            <component :is="item.type | formatComponentName" v-bind="item.data"></component>
         </div>
     </div>
 </template>
@@ -11,23 +9,6 @@
 <script>
 import axios from 'axios'
 import * as components from '../items'
-
-
-// throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
-const creactThrottle = (delay = 1000) => {
-    let status = 'START'
-    return function throttle(fn, delay = 1000) {
-        if(status === 'WAITING') {
-            return 
-        }
-        
-        status = 'WAITING'
-        setTimeout(() => {
-            status = 'START'
-            fn & fn() 
-        }, delay);
-    }
-}
 
 const convertModule2Obj = moduleObj => {
     let result = {}
@@ -37,15 +18,19 @@ const convertModule2Obj = moduleObj => {
     return result 
 }
 
-
 export default {
     data() {
         return {
             list: [],
-            throttle: creactThrottle()
+            throttle: this.creactThrottle()
         }
     },
     components:convertModule2Obj(components),
+    filters: {
+        formatComponentName(componentName) {
+            return componentName.replace(/^\w/g, name => name.toUpperCase())
+        }
+    },
     created() {
         this.getDataHandle()
         window.onscroll = () => {
