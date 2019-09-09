@@ -1,9 +1,7 @@
 <template>
     <div>
         <div v-for="(item, key) in list" :key="key">
-            <SinglePic v-if="item.type == 'singlePic'" v-bind="item.data"></SinglePic>
-            <Agriculture v-else-if="item.type === 'agriculture'" v-bind="item.data"></Agriculture>
-            <MultiplePic v-else v-bind="item.data"></MultiplePic>
+            <component :is="item.type | formatComponentName" v-bind="item.data"></component>
         </div>
     </div>
 </template>
@@ -11,37 +9,38 @@
 <script>
 import axios from 'axios'
 import * as components from '../items'
+<<<<<<< HEAD:20190817_18_vue_toutiao_第七节第八节/src/pages/main.vue
 console.log(components)
 console.log(components.SinglePic)
+=======
+>>>>>>> 5e1c3c40d5634d438b289f242e295703c324fe22:20190817_18_vue_toutiao/src/pages/main.vue
 
-
-// throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
-const creactThrottle = (delay = 1000) => {
-    let status = 'START'
-    return function throttle(fn, delay = 1000) {
-        if(status === 'WAITING') {
-            return 
-        }
-        
-        status = 'WAITING'
-        setTimeout(() => {
-            status = 'START'
-            fn & fn() 
-        }, delay);
+const convertModule2Obj = moduleObj => {
+    let result = {}
+    for (let moduleName in moduleObj) {
+        result[moduleName] = moduleObj[moduleName]
     }
+    return result 
 }
 
 export default {
     data() {
         return {
             list: [],
-            throttle: creactThrottle()
+            throttle: this.creactThrottle()
         }
     },
+<<<<<<< HEAD:20190817_18_vue_toutiao_第七节第八节/src/pages/main.vue
     components: {
         ...components
+=======
+    components:convertModule2Obj(components),
+    filters: {
+        formatComponentName(componentName) {
+            return componentName.replace(/^\w/g, name => name.toUpperCase())
+        }
+>>>>>>> 5e1c3c40d5634d438b289f242e295703c324fe22:20190817_18_vue_toutiao/src/pages/main.vue
     },
-
     created() {
         this.getDataHandle()
         window.onscroll = () => {
