@@ -1,7 +1,11 @@
 <template>
     <div>
         <div v-for="(item, key) in list" :key="key">
-            <component :is="item.type | formatComponentName" v-bind="item.data"></component>
+            <component 
+                v-bind:is="item.type | formatComponentName" 
+                v-bind="item.data"
+            >
+            </component>
         </div>
     </div>
 </template>
@@ -9,11 +13,6 @@
 <script>
 import axios from 'axios'
 import * as components from '../items'
-<<<<<<< HEAD:20190817_18_vue_toutiao_第七节第八节/src/pages/main.vue
-console.log(components)
-console.log(components.SinglePic)
-=======
->>>>>>> 5e1c3c40d5634d438b289f242e295703c324fe22:20190817_18_vue_toutiao/src/pages/main.vue
 
 const convertModule2Obj = moduleObj => {
     let result = {}
@@ -30,16 +29,11 @@ export default {
             throttle: this.creactThrottle()
         }
     },
-<<<<<<< HEAD:20190817_18_vue_toutiao_第七节第八节/src/pages/main.vue
-    components: {
-        ...components
-=======
     components:convertModule2Obj(components),
     filters: {
         formatComponentName(componentName) {
             return componentName.replace(/^\w/g, name => name.toUpperCase())
         }
->>>>>>> 5e1c3c40d5634d438b289f242e295703c324fe22:20190817_18_vue_toutiao/src/pages/main.vue
     },
     created() {
         this.getDataHandle()

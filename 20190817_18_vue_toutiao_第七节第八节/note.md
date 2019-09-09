@@ -152,7 +152,6 @@ css隔离
  export {MultiPic}
 ```
 
-<<<<<<< HEAD:20190817_18_vue_toutiao_第七节第八节/note.md
 ### note 
 看编译产出是很重要的一项
 render函数要return （我们的组件最后都会转化为render函数）
@@ -230,7 +229,7 @@ vue-loader是webpack的一个loader，可以讲vue后缀的文件处理成js文�
 
 针对<style> 和 <template> 中的静态资源当作模块来对待，并且使用webpack的 loaders进行处理。
 对每个组件模拟处css作用域，原理给该组件的所有元素添加data-v-hash属性，通过属性选择器的方式添加样式，算是css模块化的一种。
-=======
+
 ### v-bind="item.data"
 可以解构item.data 给组件 
 
@@ -238,4 +237,11 @@ vue-loader是webpack的一个loader，可以讲vue后缀的文件处理成js文�
 渲染一个"元组件"为动态组件。依 is 的值，来决定哪个组件被渲染
 `<component :is="item.type | formatComponentName" v-bind="item.data"></component>`
 
->>>>>>> 5e1c3c40d5634d438b289f242e295703c324fe22:20190817_18_vue_toutiao/note.md
+### 统一组件声明
+
+### keep-alive的实现原理 （缓存实例）???
+
+### mixin 
+可以让你把工具函数都注入到每个实例里面，适用于非常通用的函数
+
+1:12
