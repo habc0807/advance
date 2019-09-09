@@ -33,14 +33,15 @@ mvvm
 少部分可以理解为 
 
 
-vue-loader原理？
+
 
 1. 使用webpack编译
-` ./node_modules/.bin/webpack`
+` ./node_modules/.bin/webpack -w`
 2. 怎么启动一个服务：
 在当前文件下：` ./node_modules/.bin/webpack-dev-server` 启动一个web服务 
 使用的是webpack-dev-server 
 如果不能启动这个端口：可以查看该端口号是否被占用
+
 3. 接口数据在 20190811_今日头条实战/server
 advance/20190811_今日头条实战/server              node index.js 
 
@@ -151,3 +152,80 @@ css隔离
  export {MultiPic}
 ```
 
+### note 
+看编译产出是很重要的一项
+render函数要return （我们的组件最后都会转化为render函数）
+
+### 疑问
+
+1. scoped的实现原理 css样式隔离
+当前的组件的所有元素都添加了 添加一个属性 data-v-8个hash值 空值属性
+该组件内部的样式属性，将原来的选择器都改成了 ` 属性选择器 `, 起到了css样式隔离的作用的。起到了css样式模块化。
+
+```
+<div data-v-cd16f3e6="" class="content">
+    <span data-v-cd16f3e6="">
+        被胡歌无视，让巩俐发怒李安灰心，金马奖终于把自己“作”凉了？
+    </span>
+</div>
+.single-pic .content[data-v-cd16f3e6]
+```
+
+### vue.*.js CDN区分
+
+vue.js ： vue.js则是直接用在<script>标签中的，完整版本，直接就可以通过script引用。
+vue.common.js :预编译调试时，CommonJS规范的格式，可以使用require("")引用的NODEJS格式。
+vue.esm.js：预编译调试时， EcmaScript Module（ES MODULE)，支持import from 最新标准的。
+vue.runtime.js ：生产的运行时，需要预编译，比完整版小30%左右，前端性能最优
+vue.runtime.esm.js：生产运行时，esm标准。
+vue.runtime.common.js:生产运行时，commonJS标准。
+
+common和esm分别是2种现代模块化规范CommonJS和EcmaScript Module的缩写
+
+vue.js则是直接用在<script>标签中的。
+
+1.若是自己写个小demo测试一下
+用vue.js即可，方便阅读源码
+
+2.若你是用vue2+webpack2开发项目（vue-cli采用的方式）
+开发环境用vue.esm.js
+生产环境用vue.runtime.esm.js，比完整版小30%左右，前端性能更优
+
+
+### alias 设置别名
+将长路径设置为
+
+```
+alias: {
+    vue: './node_modules/vue/dist/vue.runtime.common.js'
+}
+```
+
+```
+module.exports = {
+  //...
+  resolve: {
+    alias: {
+      Utilities: path.resolve(__dirname, 'src/utilities/'),
+      Templates: path.resolve(__dirname, 'src/templates/')
+    }
+  }
+};
+```
+
+Now,instead of using relative paths when importing like so:
+import Utility from '../../utilities/utility'
+
+you can use the alias:
+import Utilty from 'Utilities/utilify'
+
+
+### vue-loader原理
+vue-loader 的内部实现核心是 vue-template-compiler。
+一般情况下，vue项目中的 vue和vue-template-compiler的版本要一致。单文件组件中的 <template> 块的默认编译器
+
+vue-loader是webpack的一个loader，可以讲vue后缀的文件处理成js文件。
+将template转化为render函数，style样式转化为js，处理到render函数这里的 createElement 元素里的样式属性。
+
+针对<style> 和 <template> 中的静态资源当作模块来对待，并且使用webpack的 loaders进行处理。
+对每个组件模拟处css作用域，原理给该组件的所有元素添加data-v-hash属性，通过属性选择器的方式添加样式，算是css模块化的一种。

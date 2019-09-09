@@ -10,9 +10,9 @@
 
 <script>
 import axios from 'axios'
-import MultiplePic from '../items/multiple-pic.vue'
-import SinglePic from '../items/single-pic.vue'
-import Agriculture from '../items/agriculture.vue'
+import * as components from '../items'
+console.log(components)
+console.log(components.SinglePic)
 
 
 // throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
@@ -39,9 +39,7 @@ export default {
         }
     },
     components: {
-        MultiplePic,
-        SinglePic,
-        Agriculture
+        ...components
     },
 
     created() {
@@ -58,7 +56,7 @@ export default {
                 const throttle = this.throttle
                 let _this = this
                 throttle(()=> {
-                    _this.appendData();
+                    _this.getDataHandle();
                 }, 3e3) // 科学技术法 1e3 = 1000 3e3 = 3000
             }
         }
@@ -84,35 +82,4 @@ body {
     margin: 0;
     padding: 0;
 }
-
-.item {
-    min-height: 42px;
-    padding: 16px 0;
-    margin: 0 15px;
-    border-bottom: 1px solid rgba(221, 221, 221, 0.6);
-}
-
-.item.single-pic {
-    display: flex;
-}
-
-.single-pic .content {
-    flex: 2;
-    font-size: 17px;
-    padding-right: 24px;
-}
-
-.single-pic img {
-    width: 33%;
-    display: block;
-}
-
-.item.multiple-image h3 {
-    font-size: 17px;
-}
-
-.item.multiple-image .image-list img {
-    width: 33%;
-}
-
 </style>

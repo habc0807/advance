@@ -64,7 +64,7 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
         host: '0.0.0.0',
-        port: 9001,
+        port: 9000,
         disableHostCheck: true,
         before: function (app, server) {
             app.get('/list', function (req, res) {
@@ -90,7 +90,9 @@ module.exports = {
             });
         }
     },
+
+
     // alias: {
-    //     vue: './node_modules/vue/dist'
+    //     vue: './node_modules/vue/dist/vue.runtime.common.js'
     // }
 };
