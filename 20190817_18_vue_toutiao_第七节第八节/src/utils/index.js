@@ -3,7 +3,7 @@
  * @author miaomiao 
  */
 
-import vue from 'Vue'
+import Vue from 'Vue'
 
 // debounce 去抖 
 export const createDebounce = (fn, delay = 1000) => {
@@ -32,7 +32,47 @@ export const creactThrottle = (delay = 1000) => {
     }
 }
 
-export const utils = {
-    createDebounce,
-    creactThrottle
+const THRESHOLD = 50
+
+/** 
+ * 导出一个Vue插件 
+ * 该Vue插件 使用了mixin 用来注入了几个方法
+ * 插件需要安装 需要有个install函数
+*/
+export default {
+    install: Vue => {
+        Vue.mixin({
+            // data里的变量命名规范：不能使用_开头命名
+            data() {
+                return {
+                    // 隐式被混入
+                    throttle: creactThrottle(2000)
+                }
+            },
+            created(){
+                // 如果有onReachBottom callback的话 就使用onReachBottom
+                if (typeof this.onReachBottom === 'function') {
+                    const throttle = creactThrottle(2000)
+                    window.addEventListener('scroll', () => {
+                        const offsetHeight = document.documentElement.offsetHeight
+                        const screenHeight = window.screen.height;
+                        const scrollY = window.scrollY 
+                        const gap = offsetHeight - screenHeight - scrollY
+
+                        console.log(gap)
+                        if (gap < THRESHOLD) {
+                            // 我们就让他再加载一屏数据
+                            throttle(()=> {
+                                this.onReachBottom && this.onReachBottom()
+                            }) 
+                        }
+                    })
+                }
+            },
+            methods: {
+                createDebounce,
+                creactThrottle            
+            }
+        })
+    }
 }

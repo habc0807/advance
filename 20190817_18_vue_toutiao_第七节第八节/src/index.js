@@ -5,11 +5,9 @@
 
 import Vue from 'vue'
 import Main from './pages/main.vue'
-import { utils } from './utils'
+import plugins from './utils'
 
-Vue.mixin({
-    methods: utils
-})
+Vue.use(plugins) // 安装插件 插件会对Vue进行一些操作
 
 // new 一个vue的根元素，挂在app上
 const vm = new Vue({

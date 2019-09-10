@@ -1,7 +1,7 @@
 <template>
     <div class="item multiple-image">
         <h3>
-            农业！查猪价
+            农业！查猪价 猪价飙升
         </h3>
         <div class="image-list">
             <label>输入地区：</label>
