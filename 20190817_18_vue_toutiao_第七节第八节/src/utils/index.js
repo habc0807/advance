@@ -4,19 +4,18 @@
  */
 
 import Vue from 'Vue'
+import echarts from 'echarts'
 
 // debounce 去抖 
 export const createDebounce = (fn, delay = 1000) => {
     let timer = null
     return function debounce() {
-        clearTimeout(timmer) // 打断 关键点
+        clearTimeout(timer) // 打断 关键点
         timer = setTimeout(() => {
             fn && fn()
         }, delay);
     }
-}
-
-// throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
+}// throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用
 export const creactThrottle = (delay = 1000) => {
     let status = 'START'
     return function throttle(fn, delay = 1000) {
@@ -72,6 +71,56 @@ export default {
             methods: {
                 createDebounce,
                 creactThrottle            
+            }
+        });
+
+        Vue.component('echarts', {
+            render(createElement) {
+                return createElement(
+                    'div',
+                    {
+                        attrs: {
+                            id: this.randomId,
+                        },
+                        style: {
+                            width: '90%',
+                            height: '300px'
+                        }
+                    }
+                )
+            },
+            mounted() {
+                console.log(this.$el)
+                // Vue 实例使用的根 DOM 元素
+               const echartsHandler = echarts.init(this.$el) 
+                // 指定图表的配置项和数据
+                var option = {
+                    title: {
+                        text: 'ECharts 入门示例'
+                    },
+                    tooltip: {},
+                    legend: {
+                        data:['销量']
+                    },
+                    xAxis: {
+                        data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '销量',
+                        type: 'bar',
+                        data: [5, 20, 36, 10, 10, 20]
+                    }]
+                };
+
+                // 使用刚指定的配置项和数据显示图表。
+                echartsHandler.setOption(option);
+            },
+            // computed 没有依赖其它属性，只会被计算一次
+            computed: {
+                randomId() {
+                    return 'echars-' + Math.floor(Math.random() * 10)
+                }
             }
         })
     }
