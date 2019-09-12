@@ -220,7 +220,7 @@ you can use the alias:
 import Utilty from 'Utilities/utilify'
 
 
-### vue-loader原理
+### vue-loader源码
 vue-loader 的内部实现核心是 vue-template-compiler。
 一般情况下，vue项目中的 vue和vue-template-compiler的版本要一致。单文件组件中的 <template> 块的默认编译器
 
@@ -234,12 +234,16 @@ vue-loader是webpack的一个loader，可以讲vue后缀的文件处理成js文�
 可以解构item.data 给组件 
 
 ### component 动态组件 
+动态组件是组件名不一样，根据组件名来反射到对应的组件。
 渲染一个"元组件"为动态组件。依 is 的值，来决定哪个组件被渲染
 `<component :is="item.type | formatComponentName" v-bind="item.data"></component>`
 
-### 异步组件
-返回的是一个promise，Module里有个default, default就是一个组件,
+### 异步组件 有兼容性问题吗？
+返回的是一个promise，只要这个promise，resolve了，vue就可以正常的渲染这个组件，
+Module里有个default, default就是一个组件,
 异步组件，必须是一个方法，否则它就自执行了。
+更高级的是做预加载，从本地去搂组件。高级用法。预加载，在这个页面的js加载完成之后，悄悄的加载可能会用到的异步组件。
+广告总是提前加载好。赚钱的。
 
 ```javascript
 components:{
@@ -354,7 +358,7 @@ kill -9 44550/ 进程号
 ### vue react 有很多新特性都是相互借鉴的
 react hooks vue3.0 也快了
 
-2:05
+大神都是一把梭
 
 
 
