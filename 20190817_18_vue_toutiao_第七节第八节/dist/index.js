@@ -1,6 +1,50 @@
 /******/ (function(modules) { // webpackBootstrap
+/******/ 	// install a JSONP callback for chunk loading
+/******/ 	function webpackJsonpCallback(data) {
+/******/ 		var chunkIds = data[0];
+/******/ 		var moreModules = data[1];
+/******/
+/******/
+/******/ 		// add "moreModules" to the modules object,
+/******/ 		// then flag all "chunkIds" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0, resolves = [];
+/******/ 		for(;i < chunkIds.length; i++) {
+/******/ 			chunkId = chunkIds[i];
+/******/ 			if(Object.prototype.hasOwnProperty.call(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				resolves.push(installedChunks[chunkId][0]);
+/******/ 			}
+/******/ 			installedChunks[chunkId] = 0;
+/******/ 		}
+/******/ 		for(moduleId in moreModules) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
+/******/
+/******/ 		while(resolves.length) {
+/******/ 			resolves.shift()();
+/******/ 		}
+/******/
+/******/ 	};
+/******/
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
+/******/
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		"main": 0
+/******/ 	};
+/******/
+/******/
+/******/
+/******/ 	// script path function
+/******/ 	function jsonpScriptSrc(chunkId) {
+/******/ 		return __webpack_require__.p + "" + chunkId + ".index.js"
+/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -26,6 +70,67 @@
 /******/ 		return module.exports;
 /******/ 	}
 /******/
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__webpack_require__.e = function requireEnsure(chunkId) {
+/******/ 		var promises = [];
+/******/
+/******/
+/******/ 		// JSONP chunk loading for javascript
+/******/
+/******/ 		var installedChunkData = installedChunks[chunkId];
+/******/ 		if(installedChunkData !== 0) { // 0 means "already installed".
+/******/
+/******/ 			// a Promise means "currently loading".
+/******/ 			if(installedChunkData) {
+/******/ 				promises.push(installedChunkData[2]);
+/******/ 			} else {
+/******/ 				// setup Promise in chunk cache
+/******/ 				var promise = new Promise(function(resolve, reject) {
+/******/ 					installedChunkData = installedChunks[chunkId] = [resolve, reject];
+/******/ 				});
+/******/ 				promises.push(installedChunkData[2] = promise);
+/******/
+/******/ 				// start chunk loading
+/******/ 				var script = document.createElement('script');
+/******/ 				var onScriptComplete;
+/******/
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.src = jsonpScriptSrc(chunkId);
+/******/
+/******/ 				// create error before stack unwound to get useful stacktrace later
+/******/ 				var error = new Error();
+/******/ 				onScriptComplete = function (event) {
+/******/ 					// avoid mem leaks in IE.
+/******/ 					script.onerror = script.onload = null;
+/******/ 					clearTimeout(timeout);
+/******/ 					var chunk = installedChunks[chunkId];
+/******/ 					if(chunk !== 0) {
+/******/ 						if(chunk) {
+/******/ 							var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 							var realSrc = event && event.target && event.target.src;
+/******/ 							error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 							error.name = 'ChunkLoadError';
+/******/ 							error.type = errorType;
+/******/ 							error.request = realSrc;
+/******/ 							chunk[1](error);
+/******/ 						}
+/******/ 						installedChunks[chunkId] = undefined;
+/******/ 					}
+/******/ 				};
+/******/ 				var timeout = setTimeout(function(){
+/******/ 					onScriptComplete({ type: 'timeout', target: script });
+/******/ 				}, 120000);
+/******/ 				script.onerror = script.onload = onScriptComplete;
+/******/ 				document.head.appendChild(script);
+/******/ 			}
+/******/ 		}
+/******/ 		return Promise.all(promises);
+/******/ 	};
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
@@ -78,6 +183,16 @@
 /******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// on error function for async loading
+/******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
+/******/
+/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
+/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+/******/ 	jsonpArray.push = webpackJsonpCallback;
+/******/ 	jsonpArray = jsonpArray.slice();
+/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
+/******/ 	var parentJsonpFunction = oldJsonpFunction;
 /******/
 /******/
 /******/ 	// Load entry module and return exports
@@ -385,15 +500,15 @@ eval("\n\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof S
 
 /***/ }),
 
-/***/ "./node_modules/_babel-loader@8.0.6@babel-loader/lib/index.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/items/agriculture.vue?vue&type=script&lang=js&":
-/*!*********************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/items/agriculture.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************************************************************************************************************************************/
+/***/ "./node_modules/_babel-loader@8.0.6@babel-loader/lib/index.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/components/tab.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  props: ['title', 'imageList'],\n  data: function data() {\n    return {\n      area: '北京',\n      price: 0,\n      timeout: null,\n      inputVal: '' // debounce: \n\n    };\n  },\n  created: function created() {\n    var _this = this;\n\n    // 这种处理方法很优雅 如果有很多地方可更改地区的话，我们就可以用watch监听area，不用在多处调用queryPigPrice方法\n    this.$watch('area', function (area) {\n      _this.queryPigPrice();\n    });\n  },\n  filters: {\n    addCount: function addCount(price) {\n      return price + '$';\n    }\n  },\n  watch: {\n    inputVal: function inputVal(curVal, oldVal) {\n      var _this2 = this;\n\n      // 实现input连续输入，只发一次请求\n      clearTimeout(this.timeout);\n      this.timeout = setTimeout(function () {\n        _this2.area = curVal;\n      }, 300);\n    }\n  },\n  methods: {\n    inputChange: function inputChange(e) {\n      var _this3 = this;\n\n      var debounce = this.createDebounce();\n      debounce(function () {\n        _this3.area = e.target.value;\n      }, 1000);\n    },\n    changeposition: function changeposition() {\n      this.area = '深圳';\n    },\n    queryPigPrice: function queryPigPrice() {\n      this.price = this.price + 2.7;\n    }\n  }\n});\n\n//# sourceURL=webpack:///./src/items/agriculture.vue?./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
+eval("__webpack_require__.r(__webpack_exports__);\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  data: function data() {\n    return {\n      list: []\n    };\n  },\n  components: {},\n  filters: {},\n  created: function created() {},\n  methods: {}\n});\n\n//# sourceURL=webpack:///./src/components/tab.vue?./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
@@ -429,7 +544,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n//\n//\n//\n//\n//\n//\n//\n/
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/_axios@0.19.0@axios/index.js\");\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _items__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../items */ \"./src/items/index.js\");\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n\n\n\nvar convertModule2Obj = function convertModule2Obj(moduleObj) {\n  var result = {};\n\n  for (var moduleName in moduleObj) {\n    result[moduleName] = moduleObj[moduleName];\n  }\n\n  return result;\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  data: function data() {\n    return {\n      list: []\n    };\n  },\n  components: convertModule2Obj(_items__WEBPACK_IMPORTED_MODULE_1__),\n  filters: {\n    formatComponentName: function formatComponentName(componentName) {\n      return componentName.replace(/^\\w/g, function (name) {\n        return name.toUpperCase();\n      });\n    }\n  },\n  created: function created() {\n    this.getDataHandle();\n  },\n  methods: {\n    // 美滋滋\n    onReachBottom: function onReachBottom() {\n      this.getDataHandle();\n    },\n    getDataHandle: function getDataHandle() {\n      var _this = this;\n\n      axios__WEBPACK_IMPORTED_MODULE_0___default()('http://localhost:8099/list').then(function (_ref) {\n        var data = _ref.data;\n        var listData = data.data;\n        _this.list = listData;\n        console.log(listData);\n      });\n    },\n    changeName: function changeName() {\n      this.nums = 5;\n    }\n  }\n});\n\n//# sourceURL=webpack:///./src/pages/main.vue?./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/_axios@0.19.0@axios/index.js\");\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _items__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../items */ \"./src/items/index.js\");\n/* harmony import */ var _components_tab_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/tab.vue */ \"./src/components/tab.vue\");\nfunction ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }\n\nfunction _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }\n\nfunction _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }\n\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n\n\n\n\nvar convertModule2Obj = function convertModule2Obj(moduleObj) {\n  var result = {};\n\n  for (var moduleName in moduleObj) {\n    result[moduleName] = moduleObj[moduleName];\n  }\n\n  return result;\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  data: function data() {\n    return {\n      list: []\n    };\n  },\n  components: _objectSpread({\n    tab: _components_tab_vue__WEBPACK_IMPORTED_MODULE_2__[\"default\"]\n  }, convertModule2Obj(_items__WEBPACK_IMPORTED_MODULE_1__), {\n    Agriculture: function Agriculture() {\n      return __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../items/agriculture.vue */ \"./src/items/agriculture.vue\")).then(function (res) {\n        console.log(res);\n        console.log(res);\n        console.log(res);\n      });\n    }\n  }),\n  filters: {\n    formatComponentName: function formatComponentName(componentName) {\n      return componentName.replace(/^\\w/g, function (name) {\n        return name.toUpperCase();\n      });\n    }\n  },\n  created: function created() {\n    this.getDataHandle();\n  },\n  methods: {\n    // 美滋滋\n    onReachBottom: function onReachBottom() {\n      this.getDataHandle();\n    },\n    getDataHandle: function getDataHandle() {\n      var _this = this;\n\n      axios__WEBPACK_IMPORTED_MODULE_0___default()('http://localhost:8099/list?tab=singlePic').then(function (_ref) {\n        var data = _ref.data;\n        var listData = data.data;\n        _this.list = listData;\n        console.log(listData);\n      });\n    },\n    changeName: function changeName() {\n      this.nums = 5;\n    }\n  }\n});\n\n//# sourceURL=webpack:///./src/pages/main.vue?./node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=style&index=0&lang=css&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/components/tab.vue?vue&type=style&index=0&lang=css& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("exports = module.exports = __webpack_require__(/*! ../../node_modules/_css-loader@3.2.0@css-loader/dist/runtime/api.js */ \"./node_modules/_css-loader@3.2.0@css-loader/dist/runtime/api.js\")(false);\n// Module\nexports.push([module.i, \"\\nbody {\\n    margin: 0;\\n    padding: 0;\\n}\\n\", \"\"]);\n\n\n//# sourceURL=webpack:///./src/components/tab.vue?./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
@@ -4922,15 +5048,15 @@ eval("/* WEBPACK VAR INJECTION */(function(global) {var scope = typeof global !=
 
 /***/ }),
 
-/***/ "./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/items/agriculture.vue?vue&type=template&id=059532d9&":
-/*!**************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/items/agriculture.vue?vue&type=template&id=059532d9& ***!
-  \**************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=template&id=3ec27b35&":
+/*!***********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/components/tab.vue?vue&type=template&id=3ec27b35& ***!
+  \***********************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return render; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return staticRenderFns; });\nvar render = function() {\n  var _vm = this\n  var _h = _vm.$createElement\n  var _c = _vm._self._c || _h\n  return _c(\n    \"div\",\n    { staticClass: \"item multiple-image\" },\n    [\n      _c(\"h3\", [_vm._v(\"\\n        农业！查猪价 猪价飙升\\n    \")]),\n      _vm._v(\" \"),\n      _c(\"echarts\", {\n        directives: [{ name: \"echarts\", rawName: \"v-echarts\" }]\n      }),\n      _vm._v(\" \"),\n      _c(\"div\", { staticClass: \"image-list\" }, [\n        _c(\"label\", [_vm._v(\"输入地区：\")]),\n        _vm._v(\" \"),\n        _c(\"input\", {\n          directives: [\n            {\n              name: \"model\",\n              rawName: \"v-model\",\n              value: _vm.inputVal,\n              expression: \"inputVal\"\n            }\n          ],\n          attrs: { type: \"text\" },\n          domProps: { value: _vm.inputVal },\n          on: {\n            input: function($event) {\n              if ($event.target.composing) {\n                return\n              }\n              _vm.inputVal = $event.target.value\n            }\n          }\n        }),\n        _vm._v(\" \"),\n        _c(\"span\", [_vm._v(\"地区为：\" + _vm._s(_vm.area))])\n      ]),\n      _vm._v(\" \"),\n      _c(\"div\", [\n        _vm._v(\n          \"\\n        猪价：\" + _vm._s(_vm._f(\"addCount\")(_vm.price)) + \"\\n    \"\n        )\n      ])\n    ],\n    1\n  )\n}\nvar staticRenderFns = []\nrender._withStripped = true\n\n\n\n//# sourceURL=webpack:///./src/items/agriculture.vue?./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return render; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return staticRenderFns; });\nvar render = function() {\n  var _vm = this\n  var _h = _vm.$createElement\n  var _c = _vm._self._c || _h\n  return _c(\"div\", [\n    _c(\"div\", [_vm._t(\"header\")], 2),\n    _vm._v(\" \"),\n    _c(\"div\", [_vm._t(\"content\")], 2)\n  ])\n}\nvar staticRenderFns = []\nrender._withStripped = true\n\n\n\n//# sourceURL=webpack:///./src/components/tab.vue?./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
@@ -4966,7 +5092,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return render; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return staticRenderFns; });\nvar render = function() {\n  var _vm = this\n  var _h = _vm.$createElement\n  var _c = _vm._self._c || _h\n  return _c(\n    \"div\",\n    _vm._l(_vm.list, function(item, key) {\n      return _c(\n        \"div\",\n        { key: key },\n        [\n          _c(\n            _vm._f(\"formatComponentName\")(item.type),\n            _vm._b({ tag: \"component\" }, \"component\", item.data, false)\n          )\n        ],\n        1\n      )\n    }),\n    0\n  )\n}\nvar staticRenderFns = []\nrender._withStripped = true\n\n\n\n//# sourceURL=webpack:///./src/pages/main.vue?./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return render; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return staticRenderFns; });\nvar render = function() {\n  var _vm = this\n  var _h = _vm.$createElement\n  var _c = _vm._self._c || _h\n  return _c(\n    \"div\",\n    [\n      _c(\"tab\", {\n        scopedSlots: _vm._u([\n          {\n            key: \"header\",\n            fn: function() {\n              return [\n                _c(\"span\", [_vm._v(\"推荐\")]),\n                _vm._v(\" \"),\n                _c(\"span\", [_vm._v(\"热点\")]),\n                _vm._v(\" \"),\n                _c(\"span\", [_vm._v(\"农业\")]),\n                _vm._v(\" \"),\n                _c(\"span\", [_vm._v(\"视频\")]),\n                _vm._v(\" \"),\n                _c(\"span\", [_vm._v(\"娱乐\")])\n              ]\n            },\n            proxy: true\n          },\n          {\n            key: \"content\",\n            fn: function() {\n              return _vm._l(_vm.list, function(item, key) {\n                return _c(\n                  \"div\",\n                  { key: key },\n                  [\n                    _c(\n                      _vm._f(\"formatComponentName\")(item.type),\n                      _vm._b(\n                        { tag: \"component\" },\n                        \"component\",\n                        item.data,\n                        false\n                      )\n                    )\n                  ],\n                  1\n                )\n              })\n            },\n            proxy: true\n          }\n        ])\n      })\n    ],\n    1\n  )\n}\nvar staticRenderFns = []\nrender._withStripped = true\n\n\n\n//# sourceURL=webpack:///./src/pages/main.vue?./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
@@ -4979,6 +5105,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return normalizeComponent; });\n/* globals __VUE_SSR_CONTEXT__ */\n\n// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).\n// This module is a runtime utility for cleaner component module output and will\n// be included in the final webpack user bundle.\n\nfunction normalizeComponent (\n  scriptExports,\n  render,\n  staticRenderFns,\n  functionalTemplate,\n  injectStyles,\n  scopeId,\n  moduleIdentifier, /* server only */\n  shadowMode /* vue-cli only */\n) {\n  // Vue.extend constructor export interop\n  var options = typeof scriptExports === 'function'\n    ? scriptExports.options\n    : scriptExports\n\n  // render functions\n  if (render) {\n    options.render = render\n    options.staticRenderFns = staticRenderFns\n    options._compiled = true\n  }\n\n  // functional template\n  if (functionalTemplate) {\n    options.functional = true\n  }\n\n  // scopedId\n  if (scopeId) {\n    options._scopeId = 'data-v-' + scopeId\n  }\n\n  var hook\n  if (moduleIdentifier) { // server build\n    hook = function (context) {\n      // 2.3 injection\n      context =\n        context || // cached call\n        (this.$vnode && this.$vnode.ssrContext) || // stateful\n        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional\n      // 2.2 with runInNewContext: true\n      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {\n        context = __VUE_SSR_CONTEXT__\n      }\n      // inject component styles\n      if (injectStyles) {\n        injectStyles.call(this, context)\n      }\n      // register component module identifier for async chunk inferrence\n      if (context && context._registeredComponents) {\n        context._registeredComponents.add(moduleIdentifier)\n      }\n    }\n    // used by ssr in case component is cached and beforeCreate\n    // never gets called\n    options._ssrRegister = hook\n  } else if (injectStyles) {\n    hook = shadowMode\n      ? function () { injectStyles.call(this, this.$root.$options.shadowRoot) }\n      : injectStyles\n  }\n\n  if (hook) {\n    if (options.functional) {\n      // for template-only hot-reload because in that case the render fn doesn't\n      // go through the normalizer\n      options._injectStyles = hook\n      // register for functioal component in vue file\n      var originalRender = options.render\n      options.render = function renderWithStyleInjection (h, context) {\n        hook.call(context)\n        return originalRender(h, context)\n      }\n    } else {\n      // inject component registration as beforeCreate hook\n      var existing = options.beforeCreate\n      options.beforeCreate = existing\n        ? [].concat(existing, hook)\n        : [hook]\n    }\n  }\n\n  return {\n    exports: scriptExports,\n    options: options\n  }\n}\n\n\n//# sourceURL=webpack:///./node_modules/_vue-loader@15.7.1@vue-loader/lib/runtime/componentNormalizer.js?");
+
+/***/ }),
+
+/***/ "./node_modules/_vue-style-loader@4.1.2@vue-style-loader/index.js!./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=style&index=0&lang=css&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/_vue-style-loader@4.1.2@vue-style-loader!./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./src/components/tab.vue?vue&type=style&index=0&lang=css& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("// style-loader: Adds some css to the DOM by adding a <style> tag\n\n// load the styles\nvar content = __webpack_require__(/*! !../../node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!../../node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./tab.vue?vue&type=style&index=0&lang=css& */ \"./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=style&index=0&lang=css&\");\nif(typeof content === 'string') content = [[module.i, content, '']];\nif(content.locals) module.exports = content.locals;\n// add the styles to the DOM\nvar add = __webpack_require__(/*! ../../node_modules/_vue-style-loader@4.1.2@vue-style-loader/lib/addStylesClient.js */ \"./node_modules/_vue-style-loader@4.1.2@vue-style-loader/lib/addStylesClient.js\").default\nvar update = add(\"6027cd40\", content, false, {});\n// Hot Module Replacement\nif(false) {}\n\n//# sourceURL=webpack:///./src/components/tab.vue?./node_modules/_vue-style-loader@4.1.2@vue-style-loader!./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
@@ -6052,6 +6189,54 @@ eval("var guid = __webpack_require__(/*! ./core/guid */ \"./node_modules/_zrende
 
 /***/ }),
 
+/***/ "./src/components/tab.vue":
+/*!********************************!*\
+  !*** ./src/components/tab.vue ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tab.vue?vue&type=template&id=3ec27b35& */ \"./src/components/tab.vue?vue&type=template&id=3ec27b35&\");\n/* harmony import */ var _tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tab.vue?vue&type=script&lang=js& */ \"./src/components/tab.vue?vue&type=script&lang=js&\");\n/* empty/unused harmony star reexport *//* harmony import */ var _tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tab.vue?vue&type=style&index=0&lang=css& */ \"./src/components/tab.vue?vue&type=style&index=0&lang=css&\");\n/* harmony import */ var _node_modules_vue_loader_15_7_1_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/_vue-loader@15.7.1@vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/_vue-loader@15.7.1@vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n\n\n\n/* normalize component */\n\nvar component = Object(_node_modules_vue_loader_15_7_1_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])(\n  _tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__[\"render\"],\n  _tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__[\"staticRenderFns\"],\n  false,\n  null,\n  null,\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"src/components/tab.vue\"\n/* harmony default export */ __webpack_exports__[\"default\"] = (component.exports);\n\n//# sourceURL=webpack:///./src/components/tab.vue?");
+
+/***/ }),
+
+/***/ "./src/components/tab.vue?vue&type=script&lang=js&":
+/*!*********************************************************!*\
+  !*** ./src/components/tab.vue?vue&type=script&lang=js& ***!
+  \*********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_babel_loader_8_0_6_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./tab.vue?vue&type=script&lang=js& */ \"./node_modules/_babel-loader@8.0.6@babel-loader/lib/index.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=script&lang=js&\");\n/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__[\"default\"] = (_node_modules_babel_loader_8_0_6_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack:///./src/components/tab.vue?");
+
+/***/ }),
+
+/***/ "./src/components/tab.vue?vue&type=style&index=0&lang=css&":
+/*!*****************************************************************!*\
+  !*** ./src/components/tab.vue?vue&type=style&index=0&lang=css& ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/_vue-style-loader@4.1.2@vue-style-loader!../../node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!../../node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./tab.vue?vue&type=style&index=0&lang=css& */ \"./node_modules/_vue-style-loader@4.1.2@vue-style-loader/index.js!./node_modules/_css-loader@3.2.0@css-loader/dist/cjs.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/stylePostLoader.js!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=style&index=0&lang=css&\");\n/* harmony import */ var _node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);\n/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));\n /* harmony default export */ __webpack_exports__[\"default\"] = (_node_modules_vue_style_loader_4_1_2_vue_style_loader_index_js_node_modules_css_loader_3_2_0_css_loader_dist_cjs_js_node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); \n\n//# sourceURL=webpack:///./src/components/tab.vue?");
+
+/***/ }),
+
+/***/ "./src/components/tab.vue?vue&type=template&id=3ec27b35&":
+/*!***************************************************************!*\
+  !*** ./src/components/tab.vue?vue&type=template&id=3ec27b35& ***!
+  \***************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./tab.vue?vue&type=template&id=3ec27b35& */ \"./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/components/tab.vue?vue&type=template&id=3ec27b35&\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__[\"render\"]; });\n\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_tab_vue_vue_type_template_id_3ec27b35___WEBPACK_IMPORTED_MODULE_0__[\"staticRenderFns\"]; });\n\n\n\n//# sourceURL=webpack:///./src/components/tab.vue?");
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -6064,51 +6249,15 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue_
 
 /***/ }),
 
-/***/ "./src/items/agriculture.vue":
-/*!***********************************!*\
-  !*** ./src/items/agriculture.vue ***!
-  \***********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./agriculture.vue?vue&type=template&id=059532d9& */ \"./src/items/agriculture.vue?vue&type=template&id=059532d9&\");\n/* harmony import */ var _agriculture_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./agriculture.vue?vue&type=script&lang=js& */ \"./src/items/agriculture.vue?vue&type=script&lang=js&\");\n/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_15_7_1_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/_vue-loader@15.7.1@vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/_vue-loader@15.7.1@vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n\n\n/* normalize component */\n\nvar component = Object(_node_modules_vue_loader_15_7_1_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(\n  _agriculture_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__[\"render\"],\n  _agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__[\"staticRenderFns\"],\n  false,\n  null,\n  null,\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"src/items/agriculture.vue\"\n/* harmony default export */ __webpack_exports__[\"default\"] = (component.exports);\n\n//# sourceURL=webpack:///./src/items/agriculture.vue?");
-
-/***/ }),
-
-/***/ "./src/items/agriculture.vue?vue&type=script&lang=js&":
-/*!************************************************************!*\
-  !*** ./src/items/agriculture.vue?vue&type=script&lang=js& ***!
-  \************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_babel_loader_8_0_6_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_agriculture_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/_babel-loader@8.0.6@babel-loader/lib??ref--1!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./agriculture.vue?vue&type=script&lang=js& */ \"./node_modules/_babel-loader@8.0.6@babel-loader/lib/index.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/items/agriculture.vue?vue&type=script&lang=js&\");\n/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__[\"default\"] = (_node_modules_babel_loader_8_0_6_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_agriculture_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack:///./src/items/agriculture.vue?");
-
-/***/ }),
-
-/***/ "./src/items/agriculture.vue?vue&type=template&id=059532d9&":
-/*!******************************************************************!*\
-  !*** ./src/items/agriculture.vue?vue&type=template&id=059532d9& ***!
-  \******************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/_vue-loader@15.7.1@vue-loader/lib??vue-loader-options!./agriculture.vue?vue&type=template&id=059532d9& */ \"./node_modules/_vue-loader@15.7.1@vue-loader/lib/loaders/templateLoader.js?!./node_modules/_vue-loader@15.7.1@vue-loader/lib/index.js?!./src/items/agriculture.vue?vue&type=template&id=059532d9&\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__[\"render\"]; });\n\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"staticRenderFns\", function() { return _node_modules_vue_loader_15_7_1_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_15_7_1_vue_loader_lib_index_js_vue_loader_options_agriculture_vue_vue_type_template_id_059532d9___WEBPACK_IMPORTED_MODULE_0__[\"staticRenderFns\"]; });\n\n\n\n//# sourceURL=webpack:///./src/items/agriculture.vue?");
-
-/***/ }),
-
 /***/ "./src/items/index.js":
 /*!****************************!*\
   !*** ./src/items/index.js ***!
   \****************************/
-/*! exports provided: MultiplePic, SinglePic, Agriculture */
+/*! exports provided: MultiplePic, SinglePic */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _multiple_pic_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./multiple-pic.vue */ \"./src/items/multiple-pic.vue\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"MultiplePic\", function() { return _multiple_pic_vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]; });\n\n/* harmony import */ var _single_pic_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./single-pic.vue */ \"./src/items/single-pic.vue\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"SinglePic\", function() { return _single_pic_vue__WEBPACK_IMPORTED_MODULE_1__[\"default\"]; });\n\n/* harmony import */ var _agriculture_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./agriculture.vue */ \"./src/items/agriculture.vue\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"Agriculture\", function() { return _agriculture_vue__WEBPACK_IMPORTED_MODULE_2__[\"default\"]; });\n\n/** \n * @file 所有item的统一出口\n * @author miaomiao\n */\n// import export 命名规范用大写\n\n\n\n\n//# sourceURL=webpack:///./src/items/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _multiple_pic_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./multiple-pic.vue */ \"./src/items/multiple-pic.vue\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"MultiplePic\", function() { return _multiple_pic_vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]; });\n\n/* harmony import */ var _single_pic_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./single-pic.vue */ \"./src/items/single-pic.vue\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"SinglePic\", function() { return _single_pic_vue__WEBPACK_IMPORTED_MODULE_1__[\"default\"]; });\n\n/** \n * @file 所有item的统一出口\n * @author miaomiao\n */\n// import export 命名规范用大写\n\n // export { default as Agriculture } from './agriculture.vue'\n\n//# sourceURL=webpack:///./src/items/index.js?");
 
 /***/ }),
 
@@ -6264,7 +6413,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _nod
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"createDebounce\", function() { return createDebounce; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"creactThrottle\", function() { return creactThrottle; });\n/* harmony import */ var Vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! Vue */ \"./node_modules/_vue@2.6.10@vue/dist/vue.runtime.esm.js\");\n/* harmony import */ var echarts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! echarts */ \"./node_modules/_echarts@4.2.1@echarts/index.js\");\n/* harmony import */ var echarts__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(echarts__WEBPACK_IMPORTED_MODULE_1__);\n/**\n * @file 所有的工具集合\n * @author miaomiao \n */\n\n // debounce 去抖 \n\nvar createDebounce = function createDebounce(fn) {\n  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;\n  var timer = null;\n  return function debounce() {\n    clearTimeout(timer); // 打断 关键点\n\n    timer = setTimeout(function () {\n      fn && fn();\n    }, delay);\n  };\n}; // throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用\n\nvar creactThrottle = function creactThrottle() {\n  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;\n  var status = 'START';\n  return function throttle(fn) {\n    var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;\n\n    if (status === 'WAITING') {\n      return;\n    }\n\n    status = 'WAITING';\n    setTimeout(function () {\n      status = 'START';\n      fn & fn();\n    }, delay);\n  };\n};\nvar THRESHOLD = 50;\n/** \n * 导出一个Vue插件 \n * 该Vue插件 使用了mixin 用来注入了几个方法\n * 插件需要安装 需要有个install函数\n*/\n\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  install: function install(Vue) {\n    Vue.mixin({\n      // data里的变量命名规范：不能使用_开头命名\n      data: function data() {\n        return {\n          // 隐式被混入\n          throttle: creactThrottle(2000)\n        };\n      },\n      created: function created() {\n        var _this = this;\n\n        // 如果有onReachBottom callback的话 就使用onReachBottom\n        if (typeof this.onReachBottom === 'function') {\n          var throttle = creactThrottle(2000);\n          window.addEventListener('scroll', function () {\n            var offsetHeight = document.documentElement.offsetHeight;\n            var screenHeight = window.screen.height;\n            var scrollY = window.scrollY;\n            var gap = offsetHeight - screenHeight - scrollY; // console.log(gap)\n\n            if (gap < THRESHOLD) {\n              // 我们就让他再加载一屏数据\n              throttle(function () {\n                _this.onReachBottom && _this.onReachBottom();\n              });\n            }\n          });\n        }\n      },\n      methods: {\n        createDebounce: createDebounce,\n        creactThrottle: creactThrottle\n      }\n    }); // 自定义组件里没有操作dom \n    // 而是通过指令的形式操作的dom \n\n    Vue.component('echarts', {\n      render: function render(createElement) {\n        return createElement('div', {\n          attrs: {\n            id: this.randomId\n          },\n          style: {\n            width: '90%',\n            height: '300px'\n          },\n          directives: [{\n            name: 'echarts'\n          }]\n        });\n      },\n      mounted: function mounted() {\n        // console.log(this.$el)\n        // Vue 实例使用的根 DOM 元素\n        //  const echartsHandler = echarts.init(this.$el) \n        // 指定图表的配置项和数据\n        var option = {\n          title: {\n            text: 'ECharts 入门示例'\n          },\n          tooltip: {},\n          legend: {\n            data: ['销量']\n          },\n          xAxis: {\n            data: [\"衬衫\", \"羊毛衫\", \"雪纺衫\", \"裤子\", \"高跟鞋\", \"袜子\"]\n          },\n          yAxis: {},\n          series: [{\n            name: '销量',\n            type: 'bar',\n            data: [5, 20, 36, 10, 10, 20]\n          }]\n        }; // 使用刚指定的配置项和数据显示图表。\n\n        this.echartsHandler.setOption(option);\n      },\n      // computed 没有依赖其它属性，只会被计算一次\n      computed: {\n        randomId: function randomId() {\n          return 'echars-' + Math.floor(Math.random() * 10);\n        }\n      },\n      methods: {\n        revieverEchartsHandle: function revieverEchartsHandle(handler) {\n          this.echartsHandler = handler;\n        }\n      }\n    });\n    Vue.directive('echarts', {\n      // vnode \n      // 除了 el 之外，其它参数都应该是只读的，切勿进行修改。\n      // 如果需要在钩子之间共享数据，建议通过元素的 dataset 来进行。\n      inserted: function inserted(el, binding, vnode) {\n        console.log(el);\n        console.log(binding);\n        console.log(vnode);\n        var echartsHandler = echarts__WEBPACK_IMPORTED_MODULE_1___default.a.init(el);\n        vnode.context.revieverEchartsHandle && vnode.context.revieverEchartsHandle(echartsHandler);\n      }\n    });\n  } // todolist 明天封装一个charts组件 一个charts的指令 两者配合使用\n\n});\n\n//# sourceURL=webpack:///./src/utils/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"createDebounce\", function() { return createDebounce; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"creactThrottle\", function() { return creactThrottle; });\n/* harmony import */ var Vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! Vue */ \"./node_modules/_vue@2.6.10@vue/dist/vue.runtime.esm.js\");\n/* harmony import */ var echarts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! echarts */ \"./node_modules/_echarts@4.2.1@echarts/index.js\");\n/* harmony import */ var echarts__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(echarts__WEBPACK_IMPORTED_MODULE_1__);\n/**\n * @file 所有的工具集合\n * @author miaomiao \n */\n\n // debounce 去抖 \n\nvar createDebounce = function createDebounce(fn) {\n  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;\n  var timer = null;\n  return function debounce() {\n    clearTimeout(timer); // 打断 关键点\n\n    timer = setTimeout(function () {\n      fn && fn();\n    }, delay);\n  };\n}; // throttle 会被调用很多次，只有第一次调用的勇士 放行通过 知道3s过去了之后 才可以进行下次调用\n\nvar creactThrottle = function creactThrottle() {\n  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;\n  var status = 'START';\n  return function throttle(fn) {\n    var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;\n\n    if (status === 'WAITING') {\n      return;\n    }\n\n    status = 'WAITING';\n    setTimeout(function () {\n      status = 'START';\n      fn & fn();\n    }, delay);\n  };\n};\nvar THRESHOLD = 50;\n/** \n * 导出一个Vue插件 \n * 该Vue插件 使用了mixin 用来注入了几个方法\n * 插件需要安装 需要有个install函数\n*/\n\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  install: function install(Vue) {\n    Vue.mixin({\n      // data里的变量命名规范：不能使用_开头命名\n      data: function data() {\n        return {\n          // 隐式被混入\n          throttle: creactThrottle(2000)\n        };\n      },\n      created: function created() {\n        var _this = this;\n\n        // 如果有onReachBottom callback的话 就使用onReachBottom\n        if (typeof this.onReachBottom === 'function') {\n          var throttle = creactThrottle(2000);\n          window.addEventListener('scroll', function () {\n            var offsetHeight = document.documentElement.offsetHeight;\n            var screenHeight = window.screen.height;\n            var scrollY = window.scrollY;\n            var gap = offsetHeight - screenHeight - scrollY; // console.log(gap)\n\n            if (gap < THRESHOLD) {\n              // 我们就让他再加载一屏数据\n              throttle(function () {\n                _this.onReachBottom && _this.onReachBottom();\n              });\n            }\n          });\n        }\n      },\n      methods: {\n        createDebounce: createDebounce,\n        creactThrottle: creactThrottle\n      }\n    }); // 自定义组件里没有操作dom \n    // 而是通过指令的形式操作的dom \n\n    Vue.component('echarts', {\n      render: function render(createElement) {\n        return createElement('div', {\n          attrs: {\n            id: this.randomId\n          },\n          style: {\n            width: '90%',\n            height: '300px'\n          },\n          directives: [{\n            name: 'echarts'\n          }]\n        });\n      },\n      mounted: function mounted() {\n        // console.log(this.$el)\n        // Vue 实例使用的根 DOM 元素\n        //  const echartsHandler = echarts.init(this.$el) \n        // 指定图表的配置项和数据\n        var option = {\n          title: {\n            text: 'ECharts 入门示例'\n          },\n          tooltip: {},\n          legend: {\n            data: ['销量']\n          },\n          xAxis: {\n            data: [\"衬衫\", \"羊毛衫\", \"雪纺衫\", \"裤子\", \"高跟鞋\", \"袜子\"]\n          },\n          yAxis: {},\n          series: [{\n            name: '销量',\n            type: 'bar',\n            data: [5, 20, 36, 10, 10, 20]\n          }]\n        }; // 使用刚指定的配置项和数据显示图表。\n\n        this.echartsHandler.setOption(option);\n      },\n      // computed 没有依赖其它属性，只会被计算一次\n      computed: {\n        randomId: function randomId() {\n          return 'echars-' + Math.floor(Math.random() * 10);\n        }\n      },\n      methods: {\n        revieverEchartsHandle: function revieverEchartsHandle(handler) {\n          this.echartsHandler = handler;\n        }\n      }\n    });\n    Vue.directive('echarts', {\n      // vnode \n      // 除了 el 之外，其它参数都应该是只读的，切勿进行修改。\n      // 如果需要在钩子之间共享数据，建议通过元素的 dataset 来进行。\n      inserted: function inserted(el, binding, vnode) {\n        console.log(el);\n        console.log(binding);\n        console.log(vnode);\n        var echartsHandler = echarts__WEBPACK_IMPORTED_MODULE_1___default.a.init(el); // revieverEchartsHandle是虚拟dom上的方法\n\n        vnode.context.revieverEchartsHandle && vnode.context.revieverEchartsHandle(echartsHandler);\n      }\n    });\n  } // todolist 明天封装一个charts组件 一个charts的指令 两者配合使用\n\n});\n\n//# sourceURL=webpack:///./src/utils/index.js?");
 
 /***/ })
 

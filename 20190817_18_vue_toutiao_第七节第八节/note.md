@@ -237,6 +237,43 @@ vue-loader是webpack的一个loader，可以讲vue后缀的文件处理成js文�
 渲染一个"元组件"为动态组件。依 is 的值，来决定哪个组件被渲染
 `<component :is="item.type | formatComponentName" v-bind="item.data"></component>`
 
+### 异步组件
+返回的是一个promise，Module里有个default, default就是一个组件,
+异步组件，必须是一个方法，否则它就自执行了。
+
+```javascript
+components:{
+    tab,
+    ...convertModule2Obj(components),
+    Agriculture: () => (import('../items/agriculture.vue'))
+        .then(res => {
+            console.log(res)
+            console.log(res)
+            console.log(res)
+        })
+},
+```
+
+```javascript
+Module {default: {…}, __esModule: true, Symbol(Symbol.toStringTag): "Module"}
+default:
+    created: ƒ created()
+    data: ƒ data()
+    filters: {addCount: ƒ}
+    methods: {inputChange: ƒ, changeposition: ƒ, queryPigPrice: ƒ}
+    props: (2) ["title", "imageList"]
+    render: ƒ ()
+    staticRenderFns: []
+    watch: {inputVal: ƒ}
+    __file: "src/items/agriculture.vue"
+    _compiled: true
+    __proto__: Object
+Symbol(Symbol.toStringTag): "Module"
+__esModule: true
+__proto__: Object
+```
+
+
 ### 统一组件声明
 
 ### keep-alive的实现原理 （缓存实例）???
@@ -313,6 +350,9 @@ Vue.component('echarts', {
 lsof -i4TCP:9000
 kill -9 44550/ 进程号
 再查一遍 
+
+### vue react 有很多新特性都是相互借鉴的
+react hooks vue3.0 也快了
 
 2:05
 

@@ -145,6 +145,7 @@ export default {
                 console.log(binding)
                 console.log(vnode)
                 const echartsHandler = echarts.init(el) 
+                // revieverEchartsHandle是虚拟dom上的方法
                 vnode.context.revieverEchartsHandle && vnode.context.revieverEchartsHandle(echartsHandler)
             }
         })
