@@ -58,7 +58,7 @@ export default {
                         const scrollY = window.scrollY 
                         const gap = offsetHeight - screenHeight - scrollY
 
-                        console.log(gap)
+                        // console.log(gap)
                         if (gap < THRESHOLD) {
                             // 我们就让他再加载一屏数据
                             throttle(()=> {
@@ -74,6 +74,8 @@ export default {
             }
         });
 
+        // 自定义组件里没有操作dom 
+        // 而是通过指令的形式操作的dom 
         Vue.component('echarts', {
             render(createElement) {
                 return createElement(
@@ -85,14 +87,19 @@ export default {
                         style: {
                             width: '90%',
                             height: '300px'
-                        }
+                        },
+                        directives: [
+                            {
+                                name: 'echarts'
+                            }
+                        ]
                     }
                 )
             },
             mounted() {
-                console.log(this.$el)
+                // console.log(this.$el)
                 // Vue 实例使用的根 DOM 元素
-               const echartsHandler = echarts.init(this.$el) 
+                //  const echartsHandler = echarts.init(this.$el) 
                 // 指定图表的配置项和数据
                 var option = {
                     title: {
@@ -114,14 +121,35 @@ export default {
                 };
 
                 // 使用刚指定的配置项和数据显示图表。
-                echartsHandler.setOption(option);
+                this.echartsHandler.setOption(option);
             },
             // computed 没有依赖其它属性，只会被计算一次
             computed: {
                 randomId() {
                     return 'echars-' + Math.floor(Math.random() * 10)
+                },
+            },
+            methods: {
+                revieverEchartsHandle(handler) {
+                    this.echartsHandler = handler
                 }
+            }
+        });
+
+        Vue.directive('echarts', {
+            // vnode 
+            // 除了 el 之外，其它参数都应该是只读的，切勿进行修改。
+            // 如果需要在钩子之间共享数据，建议通过元素的 dataset 来进行。
+            inserted(el, binding, vnode) {
+                console.log(el)
+                console.log(binding)
+                console.log(vnode)
+                const echartsHandler = echarts.init(el) 
+                vnode.context.revieverEchartsHandle && vnode.context.revieverEchartsHandle(echartsHandler)
             }
         })
     }
 }
+
+
+// todolist 明天封装一个charts组件 一个charts的指令 两者配合使用

@@ -249,9 +249,60 @@ created onReachBottom 既干净 又能进行注入到需要的组件里，外面
 
 ### 科学技术法 1e3 = 1000 3e3 = 3000
 
-### 自定义指令 
+### 自定义echarts组件
 遇到了小众的库 插件，没有vue的对应插件，这种情况就需要接触到DOM的底层，做成指令的来处理。
 可以在插件写，在插件里定义一个组件，组件的名字就叫 `echars`, 
+```
+Vue.component('echarts', {
+    render(createElement) {
+        return createElement(
+            'div',
+            {
+                attrs: {
+                    id: this.randomId,
+                },
+                style: {
+                    width: '90%',
+                    height: '300px'
+                }
+            }
+        )
+    },
+    mounted() {
+        console.log(this.$el)
+        // Vue 实例使用的根 DOM 元素
+        const echartsHandler = echarts.init(this.$el) 
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: 'ECharts 入门示例'
+            },
+            tooltip: {},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        echartsHandler.setOption(option);
+    },
+    // computed 没有依赖其它属性，只会被计算一次
+    computed: {
+        randomId() {
+            return 'echars-' + Math.floor(Math.random() * 10)
+        }
+    }
+})
+```
 1:12
 
 ### vm.$el
@@ -262,6 +313,9 @@ created onReachBottom 既干净 又能进行注入到需要的组件里，外面
 lsof -i4TCP:9000
 kill -9 44550/ 进程号
 再查一遍 
+
+2:05
+
 
 
 
