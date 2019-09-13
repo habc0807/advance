@@ -158,3 +158,18 @@ css隔离
 渲染一个"元组件"为动态组件。依 is 的值，来决定哪个组件被渲染
 `<component :is="item.type | formatComponentName" v-bind="item.data"></component>`
 
+### mixin 混入
+混入（mixins）是一种分发Vue组件中可复用功能的非常灵活的方式。混入对象可以包含任意组件选项，
+```
+import utils from './utils'
+
+Vue.mixin({
+    methods: utils
+})
+```
+
+### onReachBottom提成一个插件 这样在组件中只写一个函数就可以了
+
+onReachBottom() {
+    console.log('加载')
+}
