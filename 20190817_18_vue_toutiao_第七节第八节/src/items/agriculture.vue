@@ -1,11 +1,12 @@
 <template>
     <div class="item multiple-image">
         <h3>
-            农业！查猪价
+            农业！查猪价 猪价飙升
         </h3>
+        <echarts v-echarts></echarts>
         <div class="image-list">
             <label>输入地区：</label>
-            <input type="text" v-on:input="inputChange">
+            <input type="text" v-model="inputVal">
             <span>地区为：{{ area }}</span>
         </div>
         <div>
@@ -20,7 +21,9 @@ export default {
         return {
             area: '北京',
             price: 0,
-            debounce: this.createDebounce()
+            timeout: null,
+            inputVal: ''
+            // debounce: 
         }
     },
     created(){
@@ -34,14 +37,21 @@ export default {
             return price + '$'
         }
     },
+    watch: {
+        inputVal(curVal, oldVal) {
+            // 实现input连续输入，只发一次请求
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                this.area = curVal
+            }, 300);
+        },
+    },
     methods: {
         inputChange(e) {
-            const debounce = this.debounce
-            console.log(debounce)
+            const debounce = this.createDebounce()
             debounce(()=> {
-                console.log(e.target.value)
                 this.area = e.target.value
-            }, 3000)
+            }, 1000)
         },
         changeposition() {
             this.area = '深圳'
