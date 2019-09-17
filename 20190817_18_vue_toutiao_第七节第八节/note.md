@@ -360,6 +360,12 @@ react hooks vue3.0 也快了
 
 大神都是一把梭
 
+### v-on:click.prevent="$emit('more')"
+v-on:click里可以直接写表达式 不用定义一个方法了。
+more是自定义事件
+
+
+
 
 
 
