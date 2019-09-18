@@ -364,6 +364,22 @@ react hooks vue3.0 也快了
 v-on:click里可以直接写表达式 不用定义一个方法了。
 more是自定义事件
 
+### vue-loader 
+vue-loader.push 的实现其实就是 window.location.hash
+
+### window.location.hash = '#aaa'
+不刷新页面，在链接上添加了#aaa, 同时历史记录填了一条原链接，
+改了hash, 页面不刷新，只是引起了内部的变化而已。整个页面没有从新发起服务端请求。
+
+### pushState 做返回回退的时候 需要用到
+一般情况下，改了push页面就会刷新。
+有没有什么办法？可以改了path,页面也不刷新的，那就是pushState, netWork里没有新的记录，因为没有刷新页面。
+window.history.pushState(null, null, '/detail')
+接收三个参数 前两个是携带数据，第三个是传的URL。
+
+mode:'history'
+
+
 
 
 

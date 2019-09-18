@@ -4,10 +4,12 @@
  */
 
 import Vue from 'vue'
+import VueRouter from 'vue-router'
 import Main from './pages/main.vue'
 import plugins from './utils'
 
 Vue.use(plugins) // 安装插件 插件会对Vue进行一些操作
+Vue.use(VueRouter)
 
 // new 一个vue的根元素，挂在app上
 const vm = new Vue({
