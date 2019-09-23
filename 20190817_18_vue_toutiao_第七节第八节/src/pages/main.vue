@@ -35,6 +35,7 @@
 import axios from 'axios'
 import * as components from '../items'
 import tab from '../components/tab.vue'
+import {TABS} from '../config';
 
 
 const convertModule2Obj = moduleObj => {
@@ -50,7 +51,8 @@ export default {
         return {
             list: [],
             tabs: [],
-            curTab: 1
+            curTab: 1,
+            page: 'tab'
         }
     },
     components:{
@@ -68,15 +70,17 @@ export default {
         }
     },
     created() {
-
-        for(let name in tabs) {
-            result[name] = {
-                label: tabs[name],
-                index: 0,
-                list: []
+        const constructTabs = tabs => {
+            let result = {};
+            for (let name in tabs) {
+                result[name] = {
+                    label: tabs[name],
+                    index: 0,
+                    list: []
+                };
             }
-        }
-        return result;
+            return result;
+        };
 
         return {
             content: '这是一个vue的页面',

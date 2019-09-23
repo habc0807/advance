@@ -380,6 +380,38 @@ window.history.pushState(null, null, '/detail')
 mode:'history'
 
 
+### 一道题 promise
+```javascript
+function test() {
+	console.log('test')
+}
+Promise.resolve().then(res => console.log('res')).then(test())
+```
+相当于
+```javascript
+function test() {
+	console.log('test')
+}
+var resTest = test()
+Promise.resolve().then(res => console.log('res')).then(resTest)
+```
+
+
+### 成长
+大家的基本功不够 不爱注意格式 要啥啥没有 小公司 
+我也要code review 自己可以决定技术栈 确什么都没有用 自己一个人也不知道要用啥 
+在项目里用单测和流水线 
+一个项目多给自己留点时间，让自己在一个项目里可以多用一点对自己有益处，对以后面试有益处的工具或者技术站后者流水线。
+
+你给面试官说你学过什么都没用，而是你在自己的项目里都用过什么。这是一个考量点。面试官更关心你在之前的项目里用了哪些东西。
+我写了一个插件整个公司都在用，我是将vue和echarts组合到一起封装成一个插件。在一个项目里插件，组件都是自己写的，自己出了一套解决方案。
+设计的架构图（要画出来）和思路，给面试管说下自己用了哪些技术，用了哪些技术站，学完一定要用到项目上，不用等于扯淡。
+
+### git commit hook 
+js-lint es-lint  还没用
+
+
+
 
 
 
