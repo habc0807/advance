@@ -67,9 +67,9 @@ export default class VueRouter {
                 const currentHash = location.hash
                 // props 提供所有prop的对象  parent 对父亲组件的引用
                 const { props, children, parent } = context;
+                
                 // this.$parent父实例 $options是vue实例的初始化选项 
                 const router = parent.$router;
-                 
                 const currentRoute = matcher(currentHash, router.routes)
                 
                 
